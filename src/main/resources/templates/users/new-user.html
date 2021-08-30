@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layouts :: header"></head>
+
+<body>
+
+<nav th:replace = "layouts :: navbar"></nav>
+
+<div class="container">
+  <form action="/users/save" th:object="${user}" method="POST">
+    <br></br>
+
+    <input type="text" placeholder="User Name" th:field="${user.userName}">
+
+    <button type="submit">Create </button>
+
+  </form>
+</div>
+
+</body>
+
+</html>

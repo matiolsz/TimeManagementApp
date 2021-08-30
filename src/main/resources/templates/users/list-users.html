@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layouts :: header"></head>
+
+<body>
+
+<nav th:replace="layouts :: navbar"></nav>
+
+<div class="container">
+    <br></br>
+
+    <h3>Users List</h3>
+    <hr>
+
+    <a th:href="@{/users/new}"
+       class="btn btn-dark btn-sm mb-3"> 
+        Add User 
+    </a> 
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>User Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="aUser : ${users}">
+            <td th:text="${aUser.userName}"/>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+</body>
+
+</html>
