@@ -1,45 +1,54 @@
 package com.mati.WorkManagementApp.controllers;
 
-import com.mati.WorkManagementApp.dao.UserRepository;
 import com.mati.WorkManagementApp.entities.User;
+import com.mati.WorkManagementApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-@Controller
-@RequestMapping("/users")
-public class UserController{
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    private UserService userService;
 
     @Autowired
-    UserRepository userRepository;
+    private UserController(UserService userService){
+        this.userService = userService;
+    }
+
+    @PostMapping
+    public User create(@RequestBody User user){
+        return userService.create(user);
+    }
 
     @GetMapping
-    public String showUser(Model model){
-        List<User> users = userRepository.findAll();
-        model.addAttribute("users",users);
-        return "users/list-users";
+    public List<User> getAll(){
+        return userService.getAll();
     }
 
-    @GetMapping("/new")
-    public String displayUserForm(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        return "users/new-user";
+    @GetMapping("/{id}")
+    public User get(@RequestParam Long id){
+        return userService.get(id);
     }
 
-    @PostMapping("/save")
-    public String createUser(Model model, User user) {
-        userRepository.save(user);
-        return "redirect:/users";
+    @DeleteMapping("/{id}")
+    public void delete(@RequestParam Long id){
+        userService.delete(id);
     }
 
-    @GetMapping("/myAccount")
-    public String showMyAccount(){
-        return "my-account";
+    @PutMapping
+    public User put(@RequestBody User user){
+        return userService.put(user);
     }
+
+    @ResponseStatus(value= HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public String roomNotFound() {
+        return "Nie ma takiego rekordu";
+    }
+
 }

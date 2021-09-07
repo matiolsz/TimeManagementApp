@@ -1,42 +1,54 @@
 package com.mati.WorkManagementApp.controllers;
 
-import com.mati.WorkManagementApp.dao.TaskRepository;
 import com.mati.WorkManagementApp.entities.Task;
+import com.mati.WorkManagementApp.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-@Controller
-@RequestMapping("/tasks")
+@RestController
+@RequestMapping("/task")
 public class TaskController {
 
+    private TaskService taskService;
+
     @Autowired
-    TaskRepository taskRepository;
+    private TaskController(TaskService taskService){
+        this.taskService = taskService;
+    }
+
+    @PostMapping
+    public Task create(@RequestBody Task task){
+        return taskService.create(task);
+    }
 
     @GetMapping
-    public String showTasks(Model model){
-        List<Task> tasks = taskRepository.findAll();
-        model.addAttribute("tasks", tasks);
-        return "tasks/list-tasks";
+    public List<Task> getAll(){
+        return taskService.getAll();
     }
 
-    @GetMapping("/new")
-    public String displayEmployeeForm(Model model){
-        Task task = new Task();
-        model.addAttribute("task", task);
-        return "tasks/new-task";
+    @GetMapping("/{id}")
+    public Task get(@RequestParam Long id){
+        return taskService.get(id);
     }
 
-    @PostMapping("/save")
-    public String createEmployee(Model model, Task task){
-        taskRepository.save(task);
-        return "redirect:/tasks";
+    @DeleteMapping("/{id}")
+    public void delete(@RequestParam Long id){
+        taskService.delete(id);
     }
 
+    @PutMapping
+    public Task put(@RequestBody Task task){
+        return taskService.put(task);
+    }
+
+    @ResponseStatus(value= HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public String roomNotFound() {
+        return "Nie ma takiego rekordu";
+    }
 
 }
